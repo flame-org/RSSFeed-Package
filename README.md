@@ -5,8 +5,9 @@ Collection of classes for working with RSS
 ##Example of usage
 **in config.neon**
 
+	Cache: Nette\Caching\Cache
+	
 	RSSFeed: Flame\Utils\RSSFeed
-
 	TwitterRSSFeed:
 		class: \Flame\Utils\TwitterRSSFeed
 		autowired: no
