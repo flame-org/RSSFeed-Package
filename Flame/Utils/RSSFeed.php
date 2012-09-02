@@ -46,7 +46,7 @@ class RSSFeed extends \Nette\Object
 	* @param $content
 	* @return mixed
 	*/
-	private function findImages($content){
+	protected function findImages($content){
 		$pattern = '/<img[^>]+src[\\s=\'"]';
 		$pattern .= '+([^"\'>\\s]+)/is';
 
