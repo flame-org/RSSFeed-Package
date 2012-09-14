@@ -19,7 +19,7 @@ class RSSFeed extends \Nette\Object
 	/**
 	 * @var int
 	 */
-	protected $limit = 4;
+	protected $limit = 15;
 
 	/**
 	 * @var \Nette\Caching\Cache $cache
