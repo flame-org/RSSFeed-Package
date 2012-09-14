@@ -46,7 +46,7 @@ class RSSFeed extends \Nette\Object
 	* @param $content
 	* @return mixed
 	*/
-	protected function findImages($content){
+	protected function findImage($content){
 		$pattern = '/<img[^>]+src[\\s=\'"]';
 		$pattern .= '+([^"\'>\\s]+)/is';
 
@@ -63,7 +63,7 @@ class RSSFeed extends \Nette\Object
 	{
 
 		$xml = @simplexml_load_file($url);
-		//$xml = simplexml_load_file($url, 'SimpleXMLElement', LIBXML_NOCDATA);
+		//$xml = @simplexml_load_file($url, 'SimpleXMLElement', LIBXML_NOCDATA);
 		//$content = file_get_contents($url);
 		//$xml = new \SimpleXmlElement($content);
 
@@ -81,7 +81,8 @@ class RSSFeed extends \Nette\Object
 					'link' => (string) $item->link,
 					'title' => (string) $item->title,
 					'description' => $description,
-					'category' => (string) $item->category
+					'category' => (string) $item->category,
+					'image' => $this->findImage($description),
 				);
 
 				$counter++;
