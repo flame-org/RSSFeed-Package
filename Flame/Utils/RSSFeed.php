@@ -57,7 +57,7 @@ class RSSFeed extends \Nette\Object
 
 	/**
 	 * @param $url
-	 * @return \Nette\ArrayHash
+	 * @return array
 	 */
 	protected function load($url)
 	{
@@ -88,7 +88,7 @@ class RSSFeed extends \Nette\Object
 				$counter++;
 			}
 
-			return \Nette\ArrayHash::from($r);
+			return $r;
 		}
 	}
 
