@@ -62,8 +62,8 @@ class RSSFeed extends \Nette\Object
 	protected function load($url)
 	{
 
-		$xml = @simplexml_load_file($url);
-		//$xml = @simplexml_load_file($url, 'SimpleXMLElement', LIBXML_NOCDATA);
+		//$xml = @simplexml_load_file($url);
+		$xml = @simplexml_load_file($url, 'SimpleXMLElement', LIBXML_NOCDATA);
 		//$content = file_get_contents($url);
 		//$xml = new \SimpleXmlElement($content);
 
@@ -74,15 +74,22 @@ class RSSFeed extends \Nette\Object
 			foreach($xml->channel->item as $item){
 				if($counter >= $this->limit) break;
 
-				$description = (string) $item->description;
+				$namespaces = $item->getNameSpaces(true);
+
+				if(isset($namespaces['content'])){
+					$content = (string) $item->children($namespaces['content']);
+				}else{
+					$content = (string) $item->description;
+				}
 
 				$r[] = array(
 					'date' => new \Nette\DateTime($item->pubDate),
 					'link' => (string) $item->link,
 					'title' => (string) $item->title,
-					'description' => $description,
+					'description' => (string) $item->description,
 					'category' => (string) $item->category,
-					'image' => $this->findImage($description),
+					'content' => $content,
+					'image' => $this->findImage($content),
 				);
 
 				$counter++;
