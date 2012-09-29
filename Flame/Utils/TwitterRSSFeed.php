@@ -30,15 +30,13 @@ class TwitterRSSFeed extends RSSFeed
 
 		$rss = $this->load($username);
 
-		if(is_array($rss) and count($rss)){
+		if(count($rss)){
 
-			$_this = $this;
-			$rss = array_map(function ($item) use ($_this){
+			foreach($rss as $item){
 				if(isset($item['title'])){
-					$item['title'] = $_this->activeMetions($_this->activeLinks($item['title']));
+					$item['title'] = $this->activeHashTags($this->activeMetions($this->activeLinks($item['title'])));
 				}
-				return $item;
-			}, $rss);
+			}
 		}
 
 		$this->cache->save($key, $rss, array(\Nette\Caching\Cache::EXPIRE => '+ 10 minutes'));
@@ -52,25 +50,17 @@ class TwitterRSSFeed extends RSSFeed
 	 */
 	public function activeMetions($message)
 	{
+
 		$pattern = '/@[a-zA-Z]*/';
 		preg_match_all($pattern, $message, $matches);
 
 		if(count($matches)){
-			$links = array_map(function ($match) {
-				if(is_array($match) and count($match)){
-
-					$match = array_map(function ($i) {
-						return '<a href="http://twitter.com/' . str_replace('@', '', $i) . '" target="_blank">' . $i . '</a>';
-					}, $match);
-
-				}
-
-				return $match;
-			}, $matches);
-
-			if(is_array($links) and count($links)){
-				foreach($links as $k =>$link){
-					$message = str_replace($matches[$k], $link, $message);
+			foreach($matches as $match){
+				if(count($match)){
+					foreach($match as $i){
+						$link = '<a href="http://twitter.com/' . str_replace('@', '', $i) . '" target="_blank">' . $i . '</a>';
+						$message = str_replace($i,$link, $message);
+					}
 				}
 			}
 		}
@@ -84,32 +74,43 @@ class TwitterRSSFeed extends RSSFeed
 	 */
 	public function activeLinks($message)
 	{
-		$pattern = '/http.^ */';
-		$re1='((?:http|https)(?::\\/{2}[\\w]+)(?:[\\/|\\.]?)(?:[^\\s"]*))';
-		preg_match_all($re1, $message, $matches);
+		$pattern = '((?:http|https)(?::\\/{2}[\\w]+)(?:[\\/|\\.]?)(?:[^\\s"]*))';
+		preg_match_all($pattern, $message, $matches);
 
 		if(count($matches)){
-			$links = array_map(function ($match) {
-				if(is_array($match) and count($match)){
-
-
-					$match = array_map(function ($i) {
-						return '<a href="' . $i . '" target="_blank">' . $i . '</a>';
-					}, $match);
-
-				}
-
-				return $match;
-			}, $matches);
-
-			if(is_array($links) and count($links)){
-				foreach($links as $k =>$link){
-					$message = str_replace($matches[$k], $link, $message);
+			foreach($matches as $match){
+				if(count($match)){
+					foreach($match as $i){
+						$link = '<a href="' . $i . '" target="_blank">' . $i . '</a>';
+						$message = str_replace($i,$link, $message);
+					}
 				}
 			}
 		}
 
 		return $message;
 	}
+
+	public function activeHashTags($message)
+	{
+
+		$pattern = '/#[a-zA-Z]*/';
+		preg_match_all($pattern, $message, $matches);
+
+
+		if(count($matches)){
+			foreach($matches as $match){
+				if(count($match)){
+					foreach($match as $i){
+						$link =  '<a href="https://twitter.com/i/#!/search?q=' . str_replace('#', '%23', $i) . '" target="_blank">' . $i . '</a>';
+						$message = str_replace($i,$link, $message);
+					}
+				}
+			}
+		}
+
+		return $message;
+	}
+
 
 }
