@@ -8,40 +8,35 @@
  * @date    30.08.12
  */
 
-namespace Flame\Utils;
+namespace Flame\Packages\RSSFeed;
 
-class TwitterRSSFeed extends RSSFeed
+class TwitterRSSReader extends \Nette\Object
 {
 
-	protected function load($username)
+	protected function read($username, $limit = 10)
 	{
+
 		$url = 'http://twitter.com/statuses/user_timeline/' . $username . '.rss';
-		return parent::load($url);
-	}
+		$xml = @simplexml_load_file($url);
 
-	public function loadRss($username)
-	{
+		if($xml){
+			$r = array();
+			$counter = 0;
 
-		$key = 'twitter-rss-feed-' . $username . '-' . $this->limit;
+			foreach($xml->channel->item as $item){
+				if($counter >= $limit) break;
 
-		if(isset($this->cache[$key])){
-			return $this->cache[$key];
-		}
+				$r[] = array(
+					'date' => new \Nette\DateTime($item->pubDate),
+					'link' => (string) $item->link,
+					'title' => $this->activeHashTags($this->activeMetions($this->activeLinks((string) $item->title))),
+				);
 
-		$rss = $this->load($username);
-
-		if(count($rss)){
-
-			foreach($rss as $item){
-				if(isset($item['title'])){
-					$item['title'] = $this->activeHashTags($this->activeMetions($this->activeLinks($item['title'])));
-				}
+				$counter++;
 			}
+
+			return $r;
 		}
-
-		$this->cache->save($key, $rss, array(\Nette\Caching\Cache::EXPIRE => '+ 10 minutes'));
-
-		return $rss;
 	}
 
 	/**

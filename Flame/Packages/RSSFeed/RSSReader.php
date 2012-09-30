@@ -8,39 +8,13 @@
  * @date    30.08.12
  */
 
-namespace Flame\Utils;
+namespace Flame\Packages\RSSFeed;
 
 /**
  * RSS for PHP - small and easy-to-use library for consuming an RSS Feed
  */
-class RSSFeed extends \Nette\Object
+class RSSReader extends \Nette\Object
 {
-
-	/**
-	 * @var int
-	 */
-	protected $limit = 15;
-
-	/**
-	 * @var \Nette\Caching\Cache $cache
-	 */
-	protected $cache;
-
-	/**
-	 * @param $limit
-	 */
-	public function setLimit($limit)
-	{
-		if((int) $limit > 0) $this->limit = (int) $limit;
-	}
-
-	/**
-	 * @param \Nette\Caching\Cache $cache
-	 */
-	public function injectCache(\Nette\Caching\Cache $cache)
-	{
-		$this->cache = $cache;
-	}
 
 	/**
 	* @param $content
@@ -57,9 +31,10 @@ class RSSFeed extends \Nette\Object
 
 	/**
 	 * @param $url
+	 * @param int $limit
 	 * @return array
 	 */
-	protected function load($url)
+	protected function read($url, $limit = 5)
 	{
 
 		//$xml = @simplexml_load_file($url);
@@ -72,7 +47,7 @@ class RSSFeed extends \Nette\Object
 			$counter = 0;
 
 			foreach($xml->channel->item as $item){
-				if($counter >= $this->limit) break;
+				if($counter >= $limit) break;
 
 				$namespaces = $item->getNameSpaces(true);
 
@@ -97,26 +72,6 @@ class RSSFeed extends \Nette\Object
 
 			return $r;
 		}
-	}
-
-	/**
-	 * @param $url
-	 * @return \Nette\ArrayHash
-	 */
-	public function loadRss($url)
-	{
-
-		$key = 'rss-feed-' . $url . '-' . $this->limit;
-
-		if(isset($this->cache[$key])){
-			return $this->cache[$key];
-		}
-
-		$rss = $this->load($url);
-
-		$this->cache->save($key, $rss, array(\Nette\Caching\Cache::EXPIRE => '+ 22 hours'));
-
-		return $rss;
 	}
 	
 }
