@@ -7,16 +7,6 @@ Collection of classes for working with RSS
 
 	services:
 		Cache: Nette\Caching\Cache
-		
-		RSSFeed: Flame\Utils\RSSFeed
-		TwitterRSSFeed:
-			class: \Flame\Utils\TwitterRSSFeed
-			autowired: no
 
-		RSSFeedControlFactory: Portfolio\Components\RSSFeed\RSSFeedControlFactory
-		TwitterRSSFeedControlFactory:
-			class: Portfolio\Components\TwitterRSSFeed\TwitterRSSFeedControlFactory
-			inject: no
-			setup:
-				- injectTwitterRSSFeed( @TwitterRSSFeed )
-				- injectSettingFacade( @SettingFacade )
+		RSSReader: \Flame\Packages\RSSFeed\RSSReaderService
+        TwitterRSSReader: \Flame\Packages\RSSFeed\TwitterRSSReaderService
