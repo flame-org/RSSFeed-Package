@@ -59,7 +59,7 @@ class TwitterRSSReaderService extends TwitterRSSReader implements IService
 	public function load($username)
 	{
 
-		$key = 'twitter-rss-feed-' . $username . '-' . $this->limit;
+		$key = 'twitter-rss-feed-' . $username . '-' . $this->itemsLimit;
 
 		if(isset($this->cache[$key])){
 			return $this->cache[$key];
