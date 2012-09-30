@@ -1,6 +1,6 @@
 <?php
 /**
- * RSSFeedControlFactory.php
+ * RSSReader.php
  *
  * @author  Jiří Šifalda <sifalda.jiri@gmail.com>
  * @package Flame
