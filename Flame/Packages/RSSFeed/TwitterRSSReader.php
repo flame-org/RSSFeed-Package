@@ -29,7 +29,13 @@ class TwitterRSSReader extends \Nette\Object
 				$r[] = array(
 					'date' => new \Nette\DateTime($item->pubDate),
 					'link' => (string) $item->link,
-					'title' => $this->activeHashTags($this->activeMetions($this->activeLinks((string) $item->title))),
+					'title' => $this->activeHashTags(
+						$this->activeMetions(
+							$this->activeLinks(
+								$this->removeUsername($username, (string) $item->title)
+							)
+						)
+					),
 				);
 
 				$counter++;
@@ -43,7 +49,7 @@ class TwitterRSSReader extends \Nette\Object
 	 * @param $message
 	 * @return mixed
 	 */
-	public function activeMetions($message)
+	protected function activeMetions($message)
 	{
 
 		$pattern = '/@[a-zA-Z]*/';
@@ -67,7 +73,7 @@ class TwitterRSSReader extends \Nette\Object
 	 * @param $message
 	 * @return mixed
 	 */
-	public function activeLinks($message)
+	protected function activeLinks($message)
 	{
 		$pattern = '((?:http|https)(?::\\/{2}[\\w]+)(?:[\\/|\\.]?)(?:[^\\s"]*))';
 		preg_match_all($pattern, $message, $matches);
@@ -86,7 +92,7 @@ class TwitterRSSReader extends \Nette\Object
 		return $message;
 	}
 
-	public function activeHashTags($message)
+	protected function activeHashTags($message)
 	{
 
 		$pattern = '/#[a-zA-Z]*/';
@@ -107,5 +113,16 @@ class TwitterRSSReader extends \Nette\Object
 		return $message;
 	}
 
+
+	/**
+	 * @param $username
+	 * @param $message
+	 * @return mixed
+	 */
+	protected function removeUsername($username, $message)
+	{
+		$pattern = '/^' . $username . ':/';
+		return preg_replace($pattern, '', $message, 1);
+	}
 
 }
