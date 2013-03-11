@@ -49,22 +49,12 @@ class RSSReader extends \Nette\Object
 			foreach($xml->channel->item as $item){
 				if($counter >= $limit) break;
 
-				$namespaces = $item->getNameSpaces(true);
-
-				if(isset($namespaces['content'])){
-					$content = (string) $item->children($namespaces['content']);
-				}else{
-					$content = (string) $item->description;
-				}
-
 				$r[] = array(
-					'date' => new \Nette\DateTime($item->pubDate),
+					'date' => new \DateTime((string) $item->pubDate),
 					'link' => (string) $item->link,
 					'title' => (string) $item->title,
-					'description' => (string) $item->description,
 					'category' => (string) $item->category,
-					'content' => $content,
-					'image' => $this->findImage($content),
+					'content' => (string) $item->content,
 				);
 
 				$counter++;
